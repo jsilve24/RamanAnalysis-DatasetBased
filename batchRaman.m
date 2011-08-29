@@ -1,13 +1,11 @@
 function [FitSet] = batchRaman(spec,lambda) 
 % Batch Analysis of Raman Data, input argument is Dataset
 % Save all data as a Dataset with format:
-
 % *******************
 % SMPL7Dried       SMPL8Dried
 % 2.6322  16377    2.6322  1664
 % cm^-1   RamanIn  cm^-1   RamanInt
 % *******************
-
 %   x = cm^-1
 %   y = Raman Intensity
 
