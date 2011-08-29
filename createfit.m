@@ -1,0 +1,142 @@
+function [cf_, gof] = createFit(x,y)
+%CREATEFIT    Create plot of datasets and fits
+%   CREATEFIT(X,Y)
+%   Creates a plot, similar to the plot in the main curve fitting
+%   window, using the data that you provide as input.  You can
+%   apply this function to the same data you used with cftool
+%   or with different data.  You may want to edit the function to
+%   customize the code and this help message.
+%
+%   Number of datasets:  1
+%   Number of fits:  2
+
+
+% Data from dataset "sample_9_dried":
+%    X = x:
+%    Y = y:
+%    Unweighted
+%
+% This function was automatically generated on 07-Jul-2011 17:51:11
+
+% Set up figure to receive datasets and fits
+f_ = clf;
+figure(f_);
+set(f_,'Units','Pixels','Position',[528 408 672 475]);
+legh_ = []; legt_ = {};   % handles and text for legend
+xlim_ = [Inf -Inf];       % limits of x axis
+ax_ = axes;
+set(ax_,'Units','normalized','OuterPosition',[0 0 1 1]);
+set(ax_,'Box','on');
+axes(ax_); hold on;
+
+
+% --- Plot data originally in dataset "sample_9_dried"
+x = x(:);
+y = y(:);
+h_ = line(x,y,'Parent',ax_,'Color',[0.333333 0 0.666667],...
+    'LineStyle','none', 'LineWidth',1,...
+    'Marker','.', 'MarkerSize',12);
+xlim_(1) = min(xlim_(1),min(x));
+xlim_(2) = max(xlim_(2),max(x));
+legh_(end+1) = h_;
+legt_{end+1} = 'sample_9_dried';
+
+% Nudge axis limits beyond data limits
+if all(isfinite(xlim_))
+    xlim_ = xlim_ + [-1 1] * 0.01 * diff(xlim_);
+    set(ax_,'XLim',xlim_)
+else
+    set(ax_, 'XLim',[1256.7239210312313844, 1754.7171898414712814]);
+end
+
+
+% --- Create fit "D-Band"
+
+% Apply exclusion rule "Isolating D-Band"
+if length(x)~=1600
+    error('Exclusion rule ''%s'' is incompatible with ''%s''.','Isolating D-Band','x');
+end
+ex_ = true(length(x),1);
+ex_([(502:599)]) = 0;
+fo_ = fitoptions('method','NonlinearLeastSquares','Algorithm','Levenberg-Marquardt');
+ok_ = isfinite(x) & isfinite(y);
+if ~all( ok_ )
+    warning( 'GenerateMFile:IgnoringNansAndInfs', ...
+        'Ignoring NaNs and Infs in data' );
+end
+st_ = [27101 57 1345 881 ];
+set(fo_,'Startpoint',st_);
+set(fo_,'Exclude',ex_(ok_));
+ft_ = fittype('y0+(2*a/pi)*(w/(4*(x-xc)^2+w^2))',...
+    'dependent',{'y'},'independent',{'x'},...
+    'coefficients',{'a', 'w', 'xc', 'y0'});
+
+% Fit this model using new data
+if sum(~ex_(ok_))<2  %% too many points excluded
+    error('Not enough data left to fit ''%s'' after applying exclusion rule ''%s''.','D-Band','Isolating D-Band')
+else
+    cf_ = fit(x(ok_),y(ok_),ft_,fo_);
+end
+
+% Or use coefficients from the original fit:
+if 0
+    cv_ = { 27445.874603242915327, 57.427930255458626618, 1346.049935957025582, 879.49494133408654761};
+    cf_ = cfit(ft_,cv_{:});
+end
+
+% Plot this fit
+h_ = plot(cf_,'fit',0.95);
+legend off;  % turn off legend from plot method call
+set(h_(1),'Color',[1 0 0],...
+    'LineStyle','-', 'LineWidth',2,...
+    'Marker','none', 'MarkerSize',6);
+legh_(end+1) = h_(1);
+legt_{end+1} = 'D-Band';
+
+% --- Create fit "G-Band"
+
+% Apply exclusion rule "Isolating G-Band"
+if length(x)~=1600
+    error('Exclusion rule ''%s'' is incompatible with ''%s''.','Isolating G-Band','x');
+end
+ex_ = true(length(x),1);
+ex_([(606:718)]) = 0;
+ok_ = isfinite(x) & isfinite(y);
+if ~all( ok_ )
+    warning( 'GenerateMFile:IgnoringNansAndInfs', ...
+        'Ignoring NaNs and Infs in data' );
+end
+st_ = [10000 10000 40 40 1565 1595 881 ];
+ft_ = fittype('y0+(2*a1/pi)*(w1/(4*(x-xc1)^2+w1^2))+(2*a2/pi)*(w2/(4*(x-xc2)^2+w2^2))',...
+    'dependent',{'y'},'independent',{'x'},...
+    'coefficients',{'a1', 'a2', 'w1', 'w2', 'xc1', 'xc2', 'y0'});
+
+% Fit this model using new data
+if sum(~ex_(ok_))<2  %% too many points excluded
+    error('Not enough data left to fit ''%s'' after applying exclusion rule ''%s''.','G-Band','Isolating G-Band')
+else
+    cf_ = fit(x(ok_),y(ok_),ft_,'Startpoint',st_,'Exclude',ex_(ok_));
+end
+
+% Or use coefficients from the original fit:
+if 0
+    cv_ = { 75724.418393143161666, 79497.321919432826689, 22.141589731970249488, 49.620463671144626971, 1596.0119990189443797, 1576.5888401848656031, 835.8907996299418528};
+    cf_ = cfit(ft_,cv_{:});
+end
+
+% Plot this fit
+h_ = plot(cf_,'fit',0.95);
+legend off;  % turn off legend from plot method call
+set(h_(1),'Color',[0 0 1],...
+    'LineStyle','-', 'LineWidth',2,...
+    'Marker','none', 'MarkerSize',6);
+legh_(end+1) = h_(1);
+legt_{end+1} = 'G-Band';
+
+% Done plotting data and fits.  Now finish up loose ends.
+hold off;
+leginfo_ = {'Orientation', 'vertical', 'Location', 'NorthEast'};
+h_ = legend(ax_,legh_,legt_,leginfo_{:});  % create legend
+set(h_,'Interpreter','none');
+xlabel(ax_,'');               % remove x label
+ylabel(ax_,'');               % remove y label
