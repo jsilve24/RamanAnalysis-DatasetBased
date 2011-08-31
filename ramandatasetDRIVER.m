@@ -1,8 +1,12 @@
 % RAMANDATASETdriver
 
-clear classes;
+% clear classes;
 load TestData.mat;
-x = [sample_10_dried sample_11_dried sample_12_dried];
-names = {'sample10','sample11','sample12'};
-% spec = ramandataset(x,name);
-% 
+% sample_7_dried = sample_7_dried(1:end-10,:);
+spec = ramandataset({sample_7_dried,'sample_7_dried'},...
+    {sample_8_dried,'sample_8_dried'},{sample_9_dried,'sample_9_dried'});
+
+% % Testing Overloaded Arithmetic Operators
+% disp(spec(4,1));
+% spec=spec./spec(:,1);
+% disp(spec(4,1));

@@ -5,19 +5,297 @@ classdef ramandataset < dataset
     ExciteWavelength
     DateTaken
     Apparatus
+    Power
     end
     
-    methods        
+    
+    
+    methods
       function spec = ramandataset(varargin)
         %RAMANDATASET Class Constuctor
         % INPUT DATA: same way as if using the dataset class.      
-          spec = spec@dataset(varargin{:});      
+        input = varargin;
+        
+        MAX_LENGTH = 0;
+        for i = 1:numel(input);
+            MAX_LENGTH = max(MAX_LENGTH,size(input{i}{1},1));
+        end %END FOR
+        
+        for i = 1:numel(input)
+            arglength = size(input{i}{1},1); 
+            if arglength ~= MAX_LENGTH
+                M = MAX_LENGTH - arglength;
+                addon = repmat(NaN,[M 2]);
+                input{i}{1} = [input{i}{1}; addon];
+            end %END IF
+        end %END FOR
+        
+        spec = spec@dataset(input{:});      
       end % END CONSTRUCTOR
         
-    end % END METHODS
+    end % END CONSTRUCTOR METHODS
     
     methods
-% %         OVERLOADING
-    end
-
+        function modspec = plus(varargin)
+        %PLUS/RAMANDATASET  
+        % Only 2 input arguments - First argument takes precedence, second
+        % argument can only have a single spectra in it. 
+        
+            modspec = varargin{1};
+            arg1 = varargin{1};
+            arg2 = varargin{2};
+            if nargin ==1
+               error('ERROR: Not enough Input for Plus Operator');
+            elseif nargin ==2
+                if strcmp(class(arg1),'ramandataset')&&strcmp(class(arg2),'dataset')||strcmp(class(arg2),'ramandataset')
+                    argument1 = double(varargin{1});
+                    argument2 = double(varargin{2});
+                    
+                    for j = 1:size(argument1,2)/2
+                        for i = 1:size(argument1,1)
+                            index = find(argument1(:,2*j-1)==argument2(i,1));
+                            if ~isempty(index)
+                               argument1(index,2*j) = argument1(index,2*j) + argument2(i,2);
+                            end %END IF
+                        end %END FOR
+                        replacementdata = argument1(:,2*j-1:2*j);
+                        names = get(arg1,'VarNames');
+                        modspec = replacedata(modspec,replacementdata,char(names{j}));
+                    end %END FOR
+                    
+                elseif strcmp(class(arg1),'ramandataset')&&strcmp(class(arg2),'double')
+                        argument1 = double(varargin{1});
+                        argument2 = varargin{2};
+                    if size(arg2) == [1 1]
+                        for j = 1:size(argument1,2)/2
+                            for i = 1:size(argument1,1)
+                                argument1(i,2*j) = argument1(i,2*j) + argument2;
+                            end %END FOR
+                            replacementdata = argument1(:,2*j-1:2*j);
+                            names = get(arg1,'VarNames');
+                            modspec = replacedata(modspec,replacementdata,char(names{j}));
+                        end %END FOR
+                    else
+                        for j = 1:size(argument1,2)/2
+                            for i = 1:size(argument1,1)
+                                index = find(argument1(:,2*j-1)==argument2(i,1));
+                                if ~isempty(index)
+                                   argument1(index,2*j) = argument1(index,2*j) + argument2(i,2);
+                                end %END IF
+                            end %END FOR
+                            replacementdata = argument1(:,2*j-1:2*j);
+                            names = get(arg1,'VarNames');
+                            modspec = replacedata(modspec,replacementdata,char(names{j}));
+                        end %END FOR
+                    end %END IF
+                    
+                elseif strcmp(class(arg2),'ramandataset')&&strcmp(class(arg1),'double')
+                    error('ERROR: First Argument in plus() must be ramandataset');
+                    
+                end %END IF   
+              
+            end %END IF
+        end %END OVERLOADED PLUS()
+        function modspec = minus(varargin)
+        %MINUS/RAMANDATASET  
+        % Only 2 input arguments - First argument takes precedence, second
+        % argument can only have a single spectra in it. 
+        
+            modspec = varargin{1};
+            arg1 = varargin{1};
+            arg2 = varargin{2};
+            if nargin ==1
+               error('ERROR: Not enough Input for MINUS() Operator');
+            elseif nargin ==2
+                if strcmp(class(arg1),'ramandataset')&&strcmp(class(arg2),'dataset')||strcmp(class(arg2),'ramandataset')
+                    argument1 = double(varargin{1});
+                    argument2 = double(varargin{2});
+                    
+                    for j = 1:size(argument1,2)/2
+                        for i = 1:size(argument1,1)
+                            index = find(argument1(:,2*j-1)==argument2(i,1));
+                            if ~isempty(index)
+                               argument1(index,2*j) = argument1(index,2*j) - argument2(i,2);
+                            end %END IF
+                        end %END FOR
+                        replacementdata = argument1(:,2*j-1:2*j);
+                        names = get(arg1,'VarNames');
+                        modspec = replacedata(modspec,replacementdata,char(names{j}));
+                    end %END FOR
+                    
+                elseif strcmp(class(arg1),'ramandataset')&&strcmp(class(arg2),'double')
+                        argument1 = double(varargin{1});
+                        argument2 = varargin{2};
+                    if size(arg2) == [1 1]
+                        for j = 1:size(argument1,2)/2
+                            for i = 1:size(argument1,1)
+                                argument1(i,2*j) = argument1(i,2*j) - argument2;
+                            end %END FOR
+                            replacementdata = argument1(:,2*j-1:2*j);
+                            names = get(arg1,'VarNames');
+                            modspec = replacedata(modspec,replacementdata,char(names{j}));
+                        end %END FOR
+                    else
+                        for j = 1:size(argument1,2)/2
+                            for i = 1:size(argument1,1)
+                                index = find(argument1(:,2*j-1)==argument2(i,1));
+                                if ~isempty(index)
+                                   argument1(index,2*j) = argument1(index,2*j) - argument2(i,2);
+                                end %END IF
+                            end %END FOR
+                            replacementdata = argument1(:,2*j-1:2*j);
+                            names = get(arg1,'VarNames');
+                            modspec = replacedata(modspec,replacementdata,char(names{j}));
+                        end %END FOR
+                    end %END IF
+                    
+                elseif strcmp(class(arg2),'ramandataset')&&strcmp(class(arg1),'double')
+                    error('ERROR: First Argument in plus() must be ramandataset');
+                    
+                end %END IF   
+              
+            end %END IF
+        end %END OVERLOADED MINUS()
+        function modspec = rdivide(varargin)
+        %RDIVIDE/RAMANDATASET  
+        % Only 2 input arguments - First argument takes precedence, second
+        % argument can only have a single spectra in it. 
+        
+            modspec = varargin{1};
+            arg1 = varargin{1};
+            arg2 = varargin{2};
+            if nargin ==1
+               error('ERROR: Not enough Input for RDIVIDE() Operator');
+            elseif nargin ==2
+                if strcmp(class(arg1),'ramandataset')&&strcmp(class(arg2),'dataset')||strcmp(class(arg2),'ramandataset')
+                    argument1 = double(varargin{1});
+                    argument2 = double(varargin{2});
+                    
+                    for j = 1:size(argument1,2)/2
+                        for i = 1:size(argument1,1)
+                            index = find(argument1(:,2*j-1)==argument2(i,1));
+                            if ~isempty(index)
+                               argument1(index,2*j) = argument1(index,2*j) ./ argument2(i,2);
+                            end %END IF
+                        end %END FOR
+                        replacementdata = argument1(:,2*j-1:2*j);
+                        names = get(arg1,'VarNames');
+                        modspec = replacedata(modspec,replacementdata,char(names{j}));
+                    end %END FOR
+                    
+                elseif strcmp(class(arg1),'ramandataset')&&strcmp(class(arg2),'double')
+                        argument1 = double(varargin{1});
+                        argument2 = varargin{2};
+                    if size(arg2) == [1 1]
+                        for j = 1:size(argument1,2)/2
+                            for i = 1:size(argument1,1)
+                                argument1(i,2*j) = argument1(i,2*j) ./ argument2;
+                            end %END FOR
+                            replacementdata = argument1(:,2*j-1:2*j);
+                            names = get(arg1,'VarNames');
+                            modspec = replacedata(modspec,replacementdata,char(names{j}));
+                        end %END FOR
+                    else
+                        for j = 1:size(argument1,2)/2
+                            for i = 1:size(argument1,1)
+                                index = find(argument1(:,2*j-1)==argument2(i,1));
+                                if ~isempty(index)
+                                   argument1(index,2*j) = argument1(index,2*j) ./ argument2(i,2);
+                                end %END IF
+                            end %END FOR
+                            replacementdata = argument1(:,2*j-1:2*j);
+                            names = get(arg1,'VarNames');
+                            modspec = replacedata(modspec,replacementdata,char(names{j}));
+                        end %END FOR
+                    end %END IF
+                    
+                elseif strcmp(class(arg2),'ramandataset')&&strcmp(class(arg1),'double')
+                    error('ERROR: First Argument in plus() must be ramandataset');
+                    
+                end %END IF   
+              
+            end %END IF
+        end %END OVERLOADED RDIVIDE()
+        
+    end % END OVERLOADING Arithmetic METHODS
+    
+    methods
+        function val = get(spec,varargin)
+            propName = varargin;
+            if nargin ==1     
+              for i = 1:size(spec,2)
+                  props = [];
+                  propNames = {'ExperimentID','SampleID','ExciteWavelength','DateTaken','Apparatus','Power'};
+                  props{1} = spec.ExperimentID;
+                  props{2} = spec.SampleID;
+                  props{3} = spec.ExciteWavelength;
+                  props{4} = spec.DateTaken;
+                  props{5} = spec.Apparatus;    
+                  props{6} = spec.Power;
+              end %END FOR
+                fprintf('\n');
+                for i = 1:numel(props)
+                    fprintf([propNames{i} ': \t' char(props{i}) '\n']);
+                end %end for   
+                fprintf('\n');
+                val = get@dataset(spec); %Call all the Properties defined in Dataset Superclass
+            elseif nargin >=2
+                propertyArgIn = varargin{2:end};
+                while length(propertyArgIn) >=1
+                    prop = propertyArgIn{1};
+                    propertyArgIn = propertyArgIn(2:end);
+                    
+                    switch prop
+                        case 'ExperimentID'
+                            val = spec.ExperimentID;
+                        case 'SampleID'
+                            val = spec.SampleID;
+                        case 'ExciteWavelength'
+                            val = spec.ExciteWavelength;
+                        case 'DateTaken'
+                            val = spec.DateTaken;
+                        case 'Apparatus'
+                            val = spec.Apparatus;
+                        case 'Power'
+                           val = spec.Power;
+                        otherwise
+                           error('Not a valid Property Name');
+                    end %END SWITCH
+                end %END WHILE
+            else
+                error('Something Weird Happened - Possible Get statement with no Arguments');
+            end %END IF        
+        end %END GET FUNCTION
+        
+        function spec = set(spec,varargin)   
+            propertyArgIn = varargin;
+            while length(propertyArgIn) >=2
+                prop = propertyArgIn{1};
+                val = propertyArgIn{2};
+                propertyArgIn = propertyArgIn(3:end);
+               
+                switch prop
+                    case 'ExperimentID'
+                       spec.ExperimentID = val;
+                    case 'SampleID'
+                         spec.SampleID = val;
+                    case 'ExciteWavelength'
+                         spec.ExciteWavelength = val;
+                    case 'DateTaken'
+                         spec.DateTaken = val;
+                    case 'Apparatus'
+                         spec.Apparatus = val;
+                    case 'Power'
+                        spec.Power = val;
+                    otherwise
+                       error('Not a valid Property Name');
+                end %END SWITCH
+            end %END WHILE          
+        end %END SET FUNCTION
+    end % END OVERLOADING GET/SET
 end % END CLASSDEF
+
+
+
+% Learn how to make handles for functions and variables rather than always having to use
+% full name
