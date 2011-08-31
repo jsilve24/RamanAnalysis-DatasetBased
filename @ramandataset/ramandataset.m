@@ -240,7 +240,7 @@ classdef ramandataset < dataset
                 fprintf('\n');
                 val = get@dataset(spec); %Call all the Properties defined in Dataset Superclass
             elseif nargin >=2
-                propertyArgIn = varargin{2:end};
+                propertyArgIn = varargin;
                 while length(propertyArgIn) >=1
                     prop = propertyArgIn{1};
                     propertyArgIn = propertyArgIn(2:end);
@@ -258,6 +258,11 @@ classdef ramandataset < dataset
                             val = spec.Apparatus;
                         case 'Power'
                            val = spec.Power;
+                        case 'VarNames'
+                            %% This is only a temporary fix until I figure
+                            % out how to make all of the superclass
+                            % properties available. 
+                            val = get@dataset(spec,'VarNames'); 
                         otherwise
                            error('Not a valid Property Name');
                     end %END SWITCH

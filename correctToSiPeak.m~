@@ -1,0 +1,3 @@
+function fixedspectra = correctToSiPeak(x,y)
+    
+end %END CORRECTTOSIPEAK

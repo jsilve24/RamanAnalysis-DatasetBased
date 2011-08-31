@@ -35,7 +35,7 @@ for i = 1:size(filenames)
     for x = p+1:length(data)-1 %Only Numerical Values 
         temp(x-p,:) = sscanf(data{x},'%f')';
     end
-    tempdataset = dataset({temp,char(varnames(i,:))});
+    tempdataset = ramandataset({temp,char(varnames(i,:))});
     parseddata.(char(varnames(i,:))) = tempdataset.(char(varnames(i,:)));
 end
     

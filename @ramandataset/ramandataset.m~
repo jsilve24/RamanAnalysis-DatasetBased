@@ -5,11 +5,12 @@ classdef ramandataset < dataset
     ExciteWavelength
     DateTaken
     Apparatus
+    Power
     end
     
     
     
-    methods        %TODO: Set it up to handle datasets that are not of equal length using NaN
+    methods
       function spec = ramandataset(varargin)
         %RAMANDATASET Class Constuctor
         % INPUT DATA: same way as if using the dataset class.      
@@ -224,12 +225,13 @@ classdef ramandataset < dataset
             if nargin ==1     
               for i = 1:size(spec,2)
                   props = [];
-                  propNames = {'ExperimentID','SampleID','ExciteWavelength','DateTaken','Apparatus'};
+                  propNames = {'ExperimentID','SampleID','ExciteWavelength','DateTaken','Apparatus','Power'};
                   props{1} = spec.ExperimentID;
                   props{2} = spec.SampleID;
                   props{3} = spec.ExciteWavelength;
                   props{4} = spec.DateTaken;
                   props{5} = spec.Apparatus;    
+                  props{6} = spec.Power;
               end %END FOR
                 fprintf('\n');
                 for i = 1:numel(props)
@@ -245,16 +247,55 @@ classdef ramandataset < dataset
                     
                     switch prop
                         case 'ExperimentID'
+                            val = spec.ExperimentID;
                         case 'SampleID'
-                        case 'ExperimentID'
-                        case 'ExperimentID'
-                        case 'ExperimentID'
-                            
+                            val = spec.SampleID;
+                        case 'ExciteWavelength'
+                            val = spec.ExciteWavelength;
+                        case 'DateTaken'
+                            val = spec.DateTaken;
+                        case 'Apparatus'
+                            val = spec.Apparatus;
+                        case 'Power'
+                           val = spec.Power;
+                        case 'VarNames'
+                            % This is only a temporary fix until I figure
+                            % out how to make all of the supe
+                            val = spec.VarNames; 
+                        otherwise
+                           error('Not a valid Property Name');
                     end %END SWITCH
                 end %END WHILE
             else
-            end %END IF
+                error('Something Weird Happened - Possible Get statement with no Arguments');
+            end %END IF        
         end %END GET FUNCTION
+        
+        function spec = set(spec,varargin)   
+            propertyArgIn = varargin;
+            while length(propertyArgIn) >=2
+                prop = propertyArgIn{1};
+                val = propertyArgIn{2};
+                propertyArgIn = propertyArgIn(3:end);
+               
+                switch prop
+                    case 'ExperimentID'
+                       spec.ExperimentID = val;
+                    case 'SampleID'
+                         spec.SampleID = val;
+                    case 'ExciteWavelength'
+                         spec.ExciteWavelength = val;
+                    case 'DateTaken'
+                         spec.DateTaken = val;
+                    case 'Apparatus'
+                         spec.Apparatus = val;
+                    case 'Power'
+                        spec.Power = val;
+                    otherwise
+                       error('Not a valid Property Name');
+                end %END SWITCH
+            end %END WHILE          
+        end %END SET FUNCTION
     end % END OVERLOADING GET/SET
 end % END CLASSDEF
 

@@ -1,4 +1,4 @@
-function [cf] = ramanFit532(x,y,title,currentSpecNum)
+function [cf] = ramanFit514(x,y,title,currentSpecNum)
 %CREATEFIT    Create plot of datasets and fits
 %   CREATEFIT(X,Y)
 %   Creates a plot, similar to the plot in the main curve fitting
@@ -27,10 +27,7 @@ xlim_ = [Inf -Inf];       % limits of x axis
 % ax_ = axes;
 ax_ = subplot(ceil(numSpec/2),2,currentSpecNum);
 
-% DO NOT TURN THIS ON!!!
-% set(ax_,'Units','normalized','OuterPosition',[0 0 1 1]); 
-
- set(ax_,'Box','on');
+set(ax_,'Box','on');
 axes(ax_); hold on;
 
 % --- Plot data originally in dataset 
@@ -53,14 +50,19 @@ else
 end
 
 
-% --- Create fit "D-Band"
+%% --- Create fit "D-Band"
 
 % Apply exclusion rule "Isolating D-Band"
-if length(x)~=1600
-    error('Exclusion rule ''%s'' is incompatible with ''%s''.','Isolating D-Band','x');
-end
+% % if length(x)~=1600
+% %     error('Exclusion rule ''%s'' is incompatible with ''%s''.','Isolating D-Band','x');
+% % end
 ex_ = true(length(x),1);
-ex_([(502:599)]) = 0;
+
+for i = 1:length(x)
+   ex_(x>=1200&x<=1410) = 0;
+end %END FOR: Find Index of Exclusion for D-Band
+    
+    
 fo_ = fitoptions('method','NonlinearLeastSquares','Algorithm','Levenberg-Marquardt');
 ok_ = isfinite(x) & isfinite(y);
 if ~all( ok_ )
@@ -101,14 +103,18 @@ legt_{end+1} = 'D-Band';
 
 
 
-% --- Create fit "G-Band"
+%% --- Create fit "G-Band"
 
 % Apply exclusion rule "Isolating G-Band"
-if length(x)~=1600
-    error('Exclusion rule ''%s'' is incompatible with ''%s''.','Isolating G-Band','x');
-end
+% if length(x)~=1600
+%     error('Exclusion rule ''%s'' is incompatible with ''%s''.','Isolating G-Band','x');
+% end
 ex_ = true(length(x),1);
-ex_([(606:718)]) = 0;
+
+for i = 1:length(x)
+   ex_(x>=1400&x<=1600) = 0;
+end %END FOR: Find Index of Exclusion for G-Band
+
 ok_ = isfinite(x) & isfinite(y);
 if ~all( ok_ )
     warning( 'GenerateMFile:IgnoringNansAndInfs', ...

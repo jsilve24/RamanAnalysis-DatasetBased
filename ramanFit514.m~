@@ -1,4 +1,4 @@
-function [cf_, gof] = createFit(x,y)
+function [cf] = ramanFit514(x,y,title,currentSpecNum)
 %CREATEFIT    Create plot of datasets and fits
 %   CREATEFIT(X,Y)
 %   Creates a plot, similar to the plot in the main curve fitting
@@ -18,19 +18,19 @@ function [cf_, gof] = createFit(x,y)
 %
 % This function was automatically generated on 07-Jul-2011 17:51:11
 
-% Set up figure to receive datasets and fits
-f_ = clf;
-figure(f_);
-set(f_,'Units','Pixels','Position',[528 408 672 475]);
+
+global numSpec;
+
+
 legh_ = []; legt_ = {};   % handles and text for legend
 xlim_ = [Inf -Inf];       % limits of x axis
-ax_ = axes;
-set(ax_,'Units','normalized','OuterPosition',[0 0 1 1]);
+% ax_ = axes;
+ax_ = subplot(ceil(numSpec/2),2,currentSpecNum);
+
 set(ax_,'Box','on');
 axes(ax_); hold on;
 
-
-% --- Plot data originally in dataset "sample_9_dried"
+% --- Plot data originally in dataset 
 x = x(:);
 y = y(:);
 h_ = line(x,y,'Parent',ax_,'Color',[0.333333 0 0.666667],...
@@ -39,7 +39,7 @@ h_ = line(x,y,'Parent',ax_,'Color',[0.333333 0 0.666667],...
 xlim_(1) = min(xlim_(1),min(x));
 xlim_(2) = max(xlim_(2),max(x));
 legh_(end+1) = h_;
-legt_{end+1} = 'sample_9_dried';
+legt_{end+1} = char(title);
 
 % Nudge axis limits beyond data limits
 if all(isfinite(xlim_))
@@ -50,14 +50,20 @@ else
 end
 
 
-% --- Create fit "D-Band"
+%% --- Create fit "D-Band"
 
 % Apply exclusion rule "Isolating D-Band"
-if length(x)~=1600
-    error('Exclusion rule ''%s'' is incompatible with ''%s''.','Isolating D-Band','x');
-end
+% % if length(x)~=1600
+% %     error('Exclusion rule ''%s'' is incompatible with ''%s''.','Isolating D-Band','x');
+% % end
 ex_ = true(length(x),1);
-ex_([(502:599)]) = 0;
+
+for i = 1:length(x)
+%     ex_([(502:599)]) = 0;
+   ex_(x>=1250 && x<=1510) = 0;
+end %END FOR: Find Index of Exclusion for D-Band
+    
+    
 fo_ = fitoptions('method','NonlinearLeastSquares','Algorithm','Levenberg-Marquardt');
 ok_ = isfinite(x) & isfinite(y);
 if ~all( ok_ )
@@ -71,21 +77,24 @@ ft_ = fittype('y0+(2*a/pi)*(w/(4*(x-xc)^2+w^2))',...
     'dependent',{'y'},'independent',{'x'},...
     'coefficients',{'a', 'w', 'xc', 'y0'});
 
+
 % Fit this model using new data
 if sum(~ex_(ok_))<2  %% too many points excluded
     error('Not enough data left to fit ''%s'' after applying exclusion rule ''%s''.','D-Band','Isolating D-Band')
 else
-    cf_ = fit(x(ok_),y(ok_),ft_,fo_);
+    cf.DBand = fit(x(ok_),y(ok_),ft_,fo_);
 end
+
 
 % Or use coefficients from the original fit:
 if 0
     cv_ = { 27445.874603242915327, 57.427930255458626618, 1346.049935957025582, 879.49494133408654761};
-    cf_ = cfit(ft_,cv_{:});
+    cf.DBand = cfit(ft_,cv_{:});
 end
 
+
 % Plot this fit
-h_ = plot(cf_,'fit',0.95);
+h_ = plot(cf.DBand,'fit',0.95);
 legend off;  % turn off legend from plot method call
 set(h_(1),'Color',[1 0 0],...
     'LineStyle','-', 'LineWidth',2,...
@@ -93,7 +102,9 @@ set(h_(1),'Color',[1 0 0],...
 legh_(end+1) = h_(1);
 legt_{end+1} = 'D-Band';
 
-% --- Create fit "G-Band"
+
+
+%% --- Create fit "G-Band"
 
 % Apply exclusion rule "Isolating G-Band"
 if length(x)~=1600
@@ -115,17 +126,18 @@ ft_ = fittype('y0+(2*a1/pi)*(w1/(4*(x-xc1)^2+w1^2))+(2*a2/pi)*(w2/(4*(x-xc2)^2+w
 if sum(~ex_(ok_))<2  %% too many points excluded
     error('Not enough data left to fit ''%s'' after applying exclusion rule ''%s''.','G-Band','Isolating G-Band')
 else
-    cf_ = fit(x(ok_),y(ok_),ft_,'Startpoint',st_,'Exclude',ex_(ok_));
+    cf.GBand = fit(x(ok_),y(ok_),ft_,'Startpoint',st_,'Exclude',ex_(ok_));
 end
 
 % Or use coefficients from the original fit:
 if 0
     cv_ = { 75724.418393143161666, 79497.321919432826689, 22.141589731970249488, 49.620463671144626971, 1596.0119990189443797, 1576.5888401848656031, 835.8907996299418528};
-    cf_ = cfit(ft_,cv_{:});
+    cf.GBand = cfit(ft_,cv_{:});
 end
 
+
 % Plot this fit
-h_ = plot(cf_,'fit',0.95);
+h_ = plot(cf.GBand,'fit',0.95);
 legend off;  % turn off legend from plot method call
 set(h_(1),'Color',[0 0 1],...
     'LineStyle','-', 'LineWidth',2,...
