@@ -77,29 +77,29 @@ for i=1:numSpec
     
 end
 
-%% Compute Relavant Length Dependent Parameters
+%%
+% Compute Relavant Length Dependent Parameters
 
 
 % Parameters to Compute: 
 %   I_D/I_G+
-%   1/q = Asym 
+%   1/q  
 %   
 %   
 
 
 %% I_D/I_G+
 for i=1:numSpec
-  DtG(i) = PeakSet.DPeak(i)/PeakSet.GPlusPeak(i);
+  (i) = PeakSet.DPeak(i)/PeakSet.GPlusPeak(i);
 end
 y = dataset({DtG','DtG_Ratio'},'ObsNames',namesSpec);
 PeakSet = [PeakSet y];
 
-%% 1/q
+%% I_D/I_G+
 for i=1:numSpec
-  q(i) = FitSet.(char(namesSpec(i))).GBand.q;
+  DtG(i) = PeakSet.DPeak(i)/PeakSet.GPlusPeak(i);
 end
-Asym = 1./q;
-y = dataset({Asym','q_inv'},'ObsNames',namesSpec);
+y = dataset({DtG','DtG_Ratio'},'ObsNames',namesSpec);
 PeakSet = [PeakSet y];
 
 

@@ -1,0 +1,6 @@
+x = 1:3000;
+n=[a1 w1 xc1 y0 I0 xcBWF gamma q];
+m = [1457 112 1590 2 10 1545 112 25];
+y = y0+(2*a1/pi)*(w1/(4*(x-xc1)^2+w1^2))+I0*(1+(x-xcBWF)/(q*gamma))^2/(1+(x-xcBWF/gamma))^2;
+
+plot(x,y);

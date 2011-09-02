@@ -234,9 +234,17 @@ classdef ramandataset < dataset
                   props{6} = spec.Power;
               end %END FOR
                 fprintf('\n');
-                for i = 1:numel(props)
-                    fprintf([propNames{i} ': \t' char(props{i}) '\n']);
-                end %end for   
+                fprintf([propNames{1} ': \t\t' char(props{1}) '\n']);
+                fprintf([propNames{2} ': \t\t' char(props{2}) '\n']);
+                fprintf([propNames{3} ': \t' char(props{3}) '\n']);
+                fprintf([propNames{4} ': \t\t' char(props{4}) '\n']);
+                fprintf([propNames{5} ': \t\t' char(props{5}) '\n']);
+                fprintf([propNames{6} ': \t\t\t' char(props{6}) '\n']);
+
+%                 for i = 1:numel(props)
+%                     fprintf([propNames{i} ': \t' char(props{i}) '\n']);
+%                 end %end for   
+
                 fprintf('\n');
                 val = get@dataset(spec); %Call all the Properties defined in Dataset Superclass
             elseif nargin >=2
@@ -258,13 +266,9 @@ classdef ramandataset < dataset
                             val = spec.Apparatus;
                         case 'Power'
                            val = spec.Power;
-                        case 'VarNames'
-                            %% This is only a temporary fix until I figure
-                            % out how to make all of the superclass
-                            % properties available. 
-                            val = get@dataset(spec,'VarNames'); 
                         otherwise
-                           error('Not a valid Property Name');
+                            val = get@dataset(spec,prop);
+%                           error('Not a valid Property Name');
                     end %END SWITCH
                 end %END WHILE
             else
@@ -293,7 +297,8 @@ classdef ramandataset < dataset
                     case 'Power'
                         spec.Power = val;
                     otherwise
-                       error('Not a valid Property Name');
+                      spec = set@dataset(spec,prop,val);
+%                        error('Not a valid Property Name');
                 end %END SWITCH
             end %END WHILE          
         end %END SET FUNCTION

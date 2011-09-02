@@ -112,7 +112,7 @@ legt_{end+1} = 'D-Band';
 ex_ = true(length(x),1);
 
 for i = 1:length(x)
-   ex_(x>=1400&x<=1600) = 0;
+   ex_(x>=1400&x<=1670) = 0;
 end %END FOR: Find Index of Exclusion for G-Band
 
 ok_ = isfinite(x) & isfinite(y);
@@ -120,10 +120,19 @@ if ~all( ok_ )
     warning( 'GenerateMFile:IgnoringNansAndInfs', ...
         'Ignoring NaNs and Infs in data' );
 end
-st_ = [1457 361.6 112 22 1545 1588 2];
-ft_ = fittype('y0+(2*a1/pi)*(w1/(4*(x-xc1)^2+w1^2))+(2*a2/pi)*(w2/(4*(x-xc2)^2+w2^2))',...
+
+% Fit using 1 Lorentzian and one Breit-Wigner-Fano lineshape
+st_ = [639 111 19 17 1590 1568 3 13 1540 56 -9]; %% TODO: Investigate why start for q needs to be negative
+ft_ = fittype('y0+(2*a1/pi)*(w1/(4*(x-xc1)^2+w1^2))+(2*a2/pi)*(w2/(4*(x-xc2)^2+w2^2))+I0*(1+(x-xcBWF)/(q*gamma))^2/(1+((x-xcBWF)/gamma)^2)',...
     'dependent',{'y'},'independent',{'x'},...
-    'coefficients',{'a1', 'a2', 'w1', 'w2', 'xc1', 'xc2', 'y0'});
+    'coefficients',{'a1','a2','w1','w2','xc1','xc2','y0','I0','xcBWF','gamma','q'});
+
+
+% % Fit using 2 Lorentzians
+% st_ = [1457 361.6 112 22 1545 1588 2];
+% ft_ = fittype('y0+(2*a1/pi)*(w1/(4*(x-xc1)^2+w1^2))+(2*a2/pi)*(w2/(4*(x-xc2)^2+w2^2))',...
+%     'dependent',{'y'},'independent',{'x'},...
+%     'coefficients',{'a1', 'a2', 'w1', 'w2', 'xc1', 'xc2', 'y0'});
 
 % Fit this model using new data
 if sum(~ex_(ok_))<2  %% too many points excluded
