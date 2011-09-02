@@ -59,7 +59,7 @@ end
 ex_ = true(length(x),1);
 
 for i = 1:length(x)
-   ex_(x>=1200&x<=1410) = 0;
+   ex_(x>=1230&x<=1430) = 0;
 end %END FOR: Find Index of Exclusion for D-Band
     
     
@@ -69,7 +69,7 @@ if ~all( ok_ )
     warning( 'GenerateMFile:IgnoringNansAndInfs', ...
         'Ignoring NaNs and Infs in data' );
 end
-st_ = [27101 57 1345 881 ];
+st_ = [618 44 1333 4.9];
 set(fo_,'Startpoint',st_);
 set(fo_,'Exclude',ex_(ok_));
 ft_ = fittype('y0+(2*a/pi)*(w/(4*(x-xc)^2+w^2))',...
@@ -120,7 +120,7 @@ if ~all( ok_ )
     warning( 'GenerateMFile:IgnoringNansAndInfs', ...
         'Ignoring NaNs and Infs in data' );
 end
-st_ = [10000 10000 40 40 1565 1595 881 ];
+st_ = [1457 361.6 112 22 1545 1588 2];
 ft_ = fittype('y0+(2*a1/pi)*(w1/(4*(x-xc1)^2+w1^2))+(2*a2/pi)*(w2/(4*(x-xc2)^2+w2^2))',...
     'dependent',{'y'},'independent',{'x'},...
     'coefficients',{'a1', 'a2', 'w1', 'w2', 'xc1', 'xc2', 'y0'});
